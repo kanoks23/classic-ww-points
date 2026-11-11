@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d982a5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Daily Points">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Classic WW Points</title>
+<style>
+:root{--pink:#d982a5;--pink2:#f9e8ef;--ink:#382d33;--muted:#81747b;--bg:#fff9fb;--line:#f0dce5;--green:#27835b;--red:#b83c55}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
+main{max-width:560px;margin:auto;padding:18px 0 40px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{font-size:11px;letter-spacing:1.3px;font-weight:800;color:var(--pink)}h1{font-size:27px;margin:5px 0 3px}.sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+.card{background:white;border:1px solid var(--line);border-radius:19px;padding:16px;margin:13px 0;box-shadow:0 3px 14px #7b38500a}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#fff3f7;border-radius:14px;padding:13px}.stat small{display:block;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.5px}.stat strong{font-size:30px;display:block;margin-top:4px}.green{color:var(--green)}.red{color:var(--red)}
+label{display:block;font-size:12px;font-weight:700;color:#695961;margin:11px 0 5px}input,select{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;font:inherit;background:#fff;color:var(--ink);min-width:0}input:focus,select:focus{outline:2px solid #e8b4c9}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.btn{border:0;border-radius:12px;padding:13px 16px;background:var(--pink);color:white;font-weight:750;font-size:15px;width:100%;margin-top:13px}.btn.secondary{background:#f8eaf0;color:#74465a}.btn.small{width:auto;margin:0;padding:8px 11px;font-size:12px}.bar{height:9px;background:#f3e7ec;border-radius:20px;overflow:hidden;margin-top:12px}.bar>div{height:100%;background:var(--pink);border-radius:20px;width:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f5eaf0}.row:last-child{border:0}.muted{color:var(--muted);font-size:12px}.foodname{font-weight:650}.dayrow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5eaf0;font-size:14px}.pill{background:#f8eaf0;color:#8a4e68;border-radius:30px;padding:6px 10px;font-size:12px;font-weight:700}
+details summary{font-weight:750;cursor:pointer}.hint{font-size:12px;line-height:1.5;color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:18px 5px;font-size:13px}
+</style>
+</head>
+<body><main>
+<header>
+ <div class="top"><div class="eyebrow">YOUR CLASSIC WEIGHT WATCHERS COMPANION</div><span class="pill">Original Points</span></div>
+ <h1>Daily Points Tracker 🌸</h1>
+ <p class="sub">27 regular points + 5 flex points = 32 daily points</p>
+</header>
+<section class="card">
+ <div class="top"><b>Today's budget</b><span class="muted" id="dateLabel"></span></div>
+ <div class="stats" style="margin-top:12px">
+  <div class="stat"><small>POINTS EATEN</small><strong id="eaten">0</strong></div>
+  <div class="stat"><small>POINTS LEFT</small><strong class="green" id="left">32</strong></div>
+ </div>
+ <div class="bar"><div id="progress"></div></div>
+ <label for="target">Daily points budget</label><input id="target" type="number" min="0" step="1" value="32">
+ <p class="hint">Your 5 weekly flex points are spread evenly as 5 extra points each day.</p>
+</section>
+<section class="card">
+ <b>Add a food</b>
+ <label for="food">Food name</label><input id="food" placeholder="e.g. Greek yogurt">
+ <div class="grid">
+  <div><label for="cal">Calories</label><input id="cal" type="number" min="0" step="any" placeholder="150"></div>
+  <div><label for="fat">Fat (g)</label><input id="fat" type="number" min="0" step="any" placeholder="5"></div>
+  <div><label for="fiber">Fiber (g)</label><input id="fiber" type="number" min="0" step="any" placeholder="3"></div>
+ </div>
+ <p class="hint" id="preview">Enter nutrition information to calculate points.</p>
+ <button class="btn" id="add">+ Add to today's log</button>
+</section>
+<section class="card">
+ <div class="top"><b>Food log</b><span class="pill" id="dayTotal">0 points</span></div>
+ <div id="foodList" class="empty">Nothing logged yet today.</div>
+</section>
+<section class="card">
+ <div class="top"><b>This week</b><span class="muted" id="weekLabel"></span></div>
+ <div id="weekList"></div>
+ <button class="btn secondary" id="export">Export food log (CSV)</button>
+</section>
+<section class="card">
+ <details><summary>How points are calculated</summary>
+  <p class="hint">Classic formula: calories ÷ 50 + fat grams ÷ 12 − fiber grams ÷ 5. Fiber is capped at 4 grams. The result is rounded to the nearest whole point, with a minimum of zero.</p>
+  <p class="hint">This is an independently made tracker, not an official WeightWatchers product or medical/nutrition advice.</p>
+ </details>
+</section>
+<p class="hint" style="text-align:center">Your entries are saved on this device in this browser.</p>
+</main>
+<script>
+const KEY='classicWWPoints.v1';
+const $=id=>document.getElementById(id);
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const parseDate=s=>new Date(s+'T12:00:00');
+const mondayOf=s=>{const d=parseDate(s);d.setDate(d.getDate()-(d.getDay()+6)%7);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+let state=JSON.parse(localStorage.getItem(KEY)||'{"target":32,"entries":[]}');
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function points(c,f,fi){return Math.max(0,Math.round(c/50+f/12-Math.min(fi,4)/5))}
+function fmt(s){return parseDate(s).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}
+function render(){
+ const today=todayISO(), start=mondayOf(today), target=Number(state.target??32);
+ $('target').value=target;$('dateLabel').textContent=fmt(today);
+ const todays=state.entries.filter(e=>e.date===today), total=todays.reduce((a,e)=>a+e.points,0), left=target-total;
+ $('eaten').textContent=total;$('left').textContent=left;$('left').className=left<0?'red':'green';
+ $('dayTotal').textContent=total+' points';$('progress').style.width=(target>0?Math.min(100,total/target*100):0)+'%';
+ $('foodList').className=todays.length?'':'empty';
+ $('foodList').innerHTML=todays.length?todays.map(e=>`<div class="row"><div><div class="foodname">${esc(e.name)}</div><div class="muted">${e.cal} cal · ${e.fat}g fat · ${e.fiber}g fiber</div></div><div style="display:flex;align-items:center;gap:9px"><b>${e.points}</b><button class="btn small secondary" data-del="${e.id}" aria-label="Delete ${esc(e.name)}">Delete</button></div></div>`).join():'Nothing logged yet today.';
+ $('weekLabel').textContent=fmt(start)+' – '+fmt(addDays(start,6));
+ $('weekList').innerHTML=Array.from({length:7},(_,i)=>{const d=addDays(start,i),sum=state.entries.filter(e=>e.date===d).reduce((a,e)=>a+e.points,0);return `<div class="dayrow"><span>${fmt(d)}${d===today?' · Today':''}</span><b>${sum} / ${target}</b></div>`}).join('');
+}
+function addDays(s,n){const d=parseDate(s);d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function vals(){return ['cal','fat','fiber'].map(id=>$(id).value.trim())}
+function preview(){const [c,f,fi]=vals();$('preview').textContent=c!==''&&f!==''&&fi!==''&&[c,f,fi].every(x=>Number(x)>=0)?'Calculated food points: '+points(+c,+f,+fi):'Enter nutrition information to calculate points.'}
+['cal','fat','fiber'].forEach(id=>$(id).addEventListener('input',preview));
+$('target').addEventListener('change',()=>{state.target=Math.max(0,Number($('target').value)||0);save();render()});
+$('add').addEventListener('click',()=>{const name=$('food').value.trim(),[c,f,fi]=vals();if(!name||[c,f,fi].some(x=>x===''||!Number.isFinite(+x)||+x<0)){alert('Enter a food name and valid calories, fat, and fiber.');return}state.entries.push({id:Date.now()+Math.random(),date:todayISO(),name,cal:+c,fat:+f,fiber:+fi,points:points(+c,+f,+fi)});save();$('food').value='';['cal','fat','fiber'].forEach(id=>$(id).value='');preview();render()});
+$('foodList').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){state.entries=state.entries.filter(x=>String(x.id)!==b.dataset.del);save();render()}});
+$('export').addEventListener('click',()=>{const rows=[['Date','Food','Calories','Fat g','Fiber g','Points'],...state.entries.map(e=>[e.date,e.name,e.cal,e.fat,e.fiber,e.points])];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='classic-ww-food-log.csv';a.click();URL.revokeObjectURL(a.href)});
+render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
